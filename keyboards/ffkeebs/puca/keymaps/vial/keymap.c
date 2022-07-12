@@ -201,44 +201,74 @@ static void draw_arasaka_logo(void) {
         0x5f, 0x43, 0x41, 0x21, 0x11, 0x0c, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    void test(void) {
-        oled_write_raw_P(logo, 1024);
-    }
-    
-    if (timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
-        anim_timer = timer_read32();
-        test();
-    }
+    oled_write_raw_P(logo, 1024);
 }
 
 void oled_task_user(void) {
-    /*
-    render_anim();
-    */
+    static int prev_layer = 0;
+    int curr_layer = get_highest_layer(layer_state);
+
     draw_arasaka_logo();
-    /*
-    oled_set_cursor(0, 6);
-    oled_write_P(PSTR("PUCA\nPAD\n"), false);
-    oled_write_P(PSTR("-----\n"), false);
-    */
 
-    // Host Keyboard Layer Status
-    /*
-    oled_set_cursor(0, 6);
-    oled_write_P(PSTR("LAYER\n"), false);
-    oled_write_P(PSTR("\n"), false);
+    char string[5] = {0};
 
-    switch (get_highest_layer(layer_state)) {
-        case 0:
-            oled_write_P(PSTR("0x00\n"), false);
-            break;
-        case 1:
-            oled_write_P(PSTR("0x01\n"), false);
-            break;
+    // switch(anim_timer % 10) {
+    //     case 0:
+    //         oled_write_P(PSTR("0\n"), false);
+    //         break;
+    //     case 1:
+    //         oled_write_P(PSTR("1\n"), false);
+    //         break;
+    //     case 2:
+    //         oled_write_P(PSTR("2\n"), false);
+    //         break;
+    //     case 3:
+    //         oled_write_P(PSTR("3\n"), false);
+    //         break;
+    //     case 4:
+    //         oled_write_P(PSTR("4\n"), false);
+    //         break;
+    //     case 5:
+    //         oled_write_P(PSTR("5\n"), false);
+    //         break;
+    //     case 6:
+    //         oled_write_P(PSTR("6\n"), false);
+    //         break;
+    //     case 7:
+    //         oled_write_P(PSTR("7\n"), false);
+    //         break;
+    //     case 8:
+    //         oled_write_P(PSTR("8\n"), false);
+    //         break;
+    //     case 9:
+    //         oled_write_P(PSTR("9\n"), false);
+    //         break;
+    // }
+
+    if (timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
+        anim_timer = timer_read32();
     }
-    */
+
+    itoa(anim_timer, string, 10);
+    oled_write_P(string, false);
+
+    if (prev_layer != curr_layer) {
+            oled_clear();
+            oled_set_cursor(0, 7);
+
+            switch (curr_layer) {
+                case 0:
+                    oled_write_P(PSTR("0x00\n"), false);
+                    break;
+                case 1:
+                    oled_write_P(PSTR("0x01\n"), false);
+                    break;
+            }
+    }
     // char buf[5] = {0};
     // itoa(230, buf, 10);
     // oled_write_P(buf, false);
+
+    prev_layer = curr_layer;
 }
 #endif
